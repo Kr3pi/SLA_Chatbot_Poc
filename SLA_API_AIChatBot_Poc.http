@@ -1,0 +1,6 @@
+@SLA_API_AIChatBot_Poc_HostAddress = http://localhost:5201
+
+GET {{SLA_API_AIChatBot_Poc_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
