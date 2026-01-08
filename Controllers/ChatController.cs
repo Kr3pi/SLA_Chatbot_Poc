@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using POC_SLAIS_Chat.Model;
 using SLA_API_AIChatBot_Poc.Interface;
 using SLA_API_AIChatBot_Poc.Model;
+using System.Text.Json;
 
 namespace SLA_API_AIChatBot_Poc.Controllers
 {
@@ -10,62 +12,167 @@ namespace SLA_API_AIChatBot_Poc.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private readonly IChatService _chatService;
+        private readonly IOllamaService _ollamaService;
         private readonly ILogger<ChatController> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public ChatController(IChatService chatService, ILogger<ChatController> logger)
+        public ChatController(
+                IOllamaService ollamaService,
+                ILogger<ChatController> logger,
+                AppDbContext dbContext)
         {
-            _chatService = chatService;
+            _ollamaService = ollamaService;
             _logger = logger;
+            _dbContext = dbContext;
+        }
+
+        [HttpPost("stream")]
+        public async Task StreamChat([FromBody] ChatRequest request)
+        {
+            Response.ContentType = "text/event-stream";
+            Response.Headers.Add("Cache-Control", "no-cache");
+            Response.Headers.Add("Connection", "keep-alive");
+            HttpContext.Response.Headers.Add("X-Accel-Buffering", "no");
+            try
+            {
+
+                // Load or create conversation
+                var conversation = await _dbContext.ConversationsContext.FirstOrDefaultAsync(c => c.ConversationId == request.ConversationId);
+
+                if (conversation == null)
+                {
+                    conversation = new Conversations
+                    {
+                        ConversationId = request.ConversationId ?? Guid.NewGuid().ToString(),
+                        StartedAt = DateTime.UtcNow
+                    };
+                    _dbContext.ConversationsContext.Add(conversation);
+                }
+
+
+                // Add user message
+                conversation.AddMessage("user", request.Message);
+
+
+                await foreach (var chunk in _ollamaService.GenerateChatResponseStreamAsync(
+                    request.Message,
+                    conversation.Messages,
+                    HttpContext.RequestAborted))
+                {
+                    var json = JsonSerializer.Serialize(new
+                    {
+                        content = chunk,
+                        done = false,
+                        conversationId = request.ConversationId
+                    });
+
+                    await Response.WriteAsync($"data: {json}\n\n");
+                    await Response.Body.FlushAsync();
+                }
+
+                // Send completion message
+                var doneJson = JsonSerializer.Serialize(new
+                {
+                    content = "",
+                    done = true,
+                    conversationId = request.ConversationId
+                });
+
+                await Response.WriteAsync($"data: {doneJson}\n\n");
+                await Response.Body.FlushAsync();
+
+
+                // Add bot response (full text)
+                conversation.AddMessage("assistant", "[streamed response completed]");
+                await _dbContext.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in streaming chat");
+
+                var errorJson = JsonSerializer.Serialize(new
+                {
+                    content = "An error occurred. Please try again.",
+                    done = true,
+                    error = true
+                });
+
+                await Response.WriteAsync($"data: {errorJson}\n\n");
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMessage([FromBody] ChatRequest request)
+        public async Task<IActionResult> Chat([FromBody] ChatRequest request)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Message))
+
+                var conversation = await _dbContext.ConversationsContext.FirstOrDefaultAsync(c => c.ConversationId == request.ConversationId);
+
+                if (conversation == null)
                 {
-                    return BadRequest(new { error = "Message cannot be empty" });
+                    conversation = new Conversations
+                    {
+                        ConversationId = request.ConversationId ?? Guid.NewGuid().ToString(),
+                        StartedAt = DateTime.UtcNow
+                    };
+                    _dbContext.ConversationsContext.Add(conversation);
                 }
 
-                var response = await _chatService.GetResponseAsync(
+                // Add user message
+                conversation.AddMessage("user", request.Message);
+
+                // Generate response
+                var response = await _ollamaService.GenerateChatResponseAsync(
                     request.Message,
-                    request.ConversationId,
-                    request.UserId
-                 );
+                    conversation.Messages);
+
+
+                // Add bot message
+                conversation.AddMessage("assistant", response);
+
+                await _dbContext.SaveChangesAsync();
+
 
                 return Ok(new ChatResponse
                 {
-                    Reply = response.Message,
-                    ConversationId = response.ConversationId,
-                    RequiresEscalation = response.RequiresEscalation,
-                    Intent = response.Intent
+                    Reply = response,
+                    ConversationId = request.ConversationId,
+                    RequiresEscalation = false
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing chat message");
-                return StatusCode(500, new { error = "An error occurred. Make sure Ollama is running." });
+                _logger.LogError(ex, "Error processing chat request");
+                return StatusCode(500, new { error = "An error occurred processing your request" });
             }
         }
 
 
-
-        [HttpPost("feedback")]
-        public async Task<IActionResult> SubmitFeedback([FromBody] FeedbackRequest request)
+        [HttpGet("health")]
+        public async Task<IActionResult> HealthCheck()
         {
-            try
+            var isAvailable = await _ollamaService.IsServiceAvailableAsync();
+
+            if (isAvailable)
             {
-                await _chatService.RecordFeedbackAsync(request.MessageId, request.IsHelpful);
-                return Ok(new { success = true });
+                var models = await _ollamaService.ListModelsAsync();
+                return Ok(new
+                {
+                    status = "healthy",
+                    models = models,
+                    timestamp = DateTime.UtcNow
+                });
             }
-            catch (Exception ex)
+
+            return StatusCode(503, new
             {
-                _logger.LogError(ex, "Error recording feedback");
-                return StatusCode(500, new { error = "Failed to record feedback" });
-            }
+                status = "unhealthy",
+                error = "Ollama service is not available"
+            });
         }
     }
 }
+   
 

@@ -2,6 +2,9 @@
 {
     public class OllamaMessage
     {
-        public string Content { get; set; }
+
+        public string? Role { get; set; }
+        public string? Content { get; set; }
+
     }
 }

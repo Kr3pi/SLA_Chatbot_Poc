@@ -1,4 +1,4 @@
-﻿using POC_SLAIS_Chat.Service;
+﻿
 using SLA_API_AIChatBot_Poc.Interface;
 using SLA_API_AIChatBot_Poc.Model;
 using System.Text;
@@ -7,30 +7,30 @@ using System.Text.RegularExpressions;
 
 namespace SLA_API_AIChatBot_Poc.Services
 {
-    public class ChatService : IChatService
+    public class ChatService 
     {
 
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly ILogger<ChatService> _logger;
         private readonly IConversationRepository _conversationRepo;
-        private readonly KnowledgeBaseService _knowledgeBase;
+      
 
 
         // In-memory cache for active conversations (use Redis in production)
         private readonly Dictionary<string, Conversations> _activeConversations;
 
 
-        public ChatService(HttpClient httpClient, IConfiguration config, ILogger<ChatService> logger, IConversationRepository conversationRepo, KnowledgeBaseService knowledgeBase)
+        public ChatService(HttpClient httpClient, IConfiguration config, ILogger<ChatService> logger, IConversationRepository conversationRepo)
         {
             _httpClient = httpClient;
             _config = config;
             _logger = logger;
             _conversationRepo = conversationRepo;
-            _knowledgeBase = knowledgeBase;
+         
             _activeConversations = new Dictionary<string, Conversations>();
         }
-
+/*
         public async Task<ChatServiceResponse> GetResponseAsync(string userMessage, string? conversationId, string? userId = null)
         {
             conversationId ??= Guid.NewGuid().ToString();
@@ -50,7 +50,7 @@ namespace SLA_API_AIChatBot_Poc.Services
 
                 // Step 2: Try quick response for common queries
                 //  var quickResponse = await TryQuickResponseAsync(userMessage, intent);
-                /*       if (quickResponse != null)
+                *//*       if (quickResponse != null)
                        {
                            context.AddMessage("assistant", quickResponse);
                            await _conversationRepo.SaveConversationAsync(context);
@@ -63,10 +63,8 @@ namespace SLA_API_AIChatBot_Poc.Services
                                Intent = intent
 
                            };
-                       }*/
+                       }*//*
 
-                // Step 3: Search knowledge base for relevant information
-                var knowledgeContext = await _knowledgeBase.SearchAsync(userMessage, intent);
 
                 // Step 4: Check if escalation is needed
                 if (ShouldEscalate(userMessage, intent, context))
@@ -86,38 +84,13 @@ namespace SLA_API_AIChatBot_Poc.Services
                         Intent = intent
                     };
                 }
-
-                // Step 6: Generate AI response with full context
-                var aiResponse = await GenerateAIResponseAsync(context, intent, knowledgeContext);
-
-                context.AddMessage("assistant", aiResponse);
-                await _conversationRepo.SaveConversationAsync(context);
-
-                return new ChatServiceResponse
-                {
-                    Message = aiResponse,
-                    ConversationId = conversationId,
-                    RequiresEscalation = false,
-                    Intent = intent,
-                    Confidence = CalculateConfidence(aiResponse)
-                };
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing message for conversation {ConversationId}", conversationId);
-
-                var errorMessage = "I apologize, but I'm experiencing technical difficulties. Would you like me to connect you with a human agent?";
-                context.AddMessage("assistant", errorMessage);
-
-                return new ChatServiceResponse
-                {
-                    Message = errorMessage,
-                    ConversationId = conversationId,
-                    RequiresEscalation = true,
-                    Intent = "error"
-                };
+            catch (Exception ex) {
+                 Console.WriteLine(ex.ToString());        
             }
-        }
+        }*/
+  
+        
         public async Task<bool> EscalateToHumanAsync(string conversationId)
         {
             var context = await _conversationRepo.GetConversationAsync(conversationId);
