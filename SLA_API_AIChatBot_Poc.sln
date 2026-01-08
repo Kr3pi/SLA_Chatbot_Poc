@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLA_API_AIChatBot_Poc", "SLA_API_AIChatBot_Poc.csproj", "{010F88E1-9797-46BB-9D92-ABAC7BD44638}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{010F88E1-9797-46BB-9D92-ABAC7BD44638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{010F88E1-9797-46BB-9D92-ABAC7BD44638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{010F88E1-9797-46BB-9D92-ABAC7BD44638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{010F88E1-9797-46BB-9D92-ABAC7BD44638}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E88CF363-8E8B-4180-925D-DF84F9769618}
+	EndGlobalSection
+EndGlobal
