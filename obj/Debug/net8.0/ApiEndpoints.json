@@ -1,0 +1,54 @@
+[
+  {
+    "ContainingType": "SLA_API_AIChatBot_Poc.Controllers.ChatController",
+    "Method": "SendMessage",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "POC_SLAIS_Chat.Model.ChatRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SLA_API_AIChatBot_Poc.Controllers.ChatController",
+    "Method": "SubmitFeedback",
+    "RelativePath": "api/Chat/feedback",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SLA_API_AIChatBot_Poc.Model.FeedbackRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SLA_API_AIChatBot_Poc.Controllers.TestController",
+    "Method": "TestDatabase",
+    "RelativePath": "api/Test/database",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SLA_API_AIChatBot_Poc.Controllers.TestController",
+    "Method": "TestRepository",
+    "RelativePath": "api/Test/repository",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
