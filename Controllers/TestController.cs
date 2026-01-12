@@ -28,7 +28,7 @@ namespace SLA_API_AIChatBot_Poc.Controllers
             return Ok(new
             {
                 databaseConnected = canConnect,
-                conversationCount = await _context.ConversationsContext.CountAsync()
+                conversationCount = await _context.Conversations.CountAsync()
             });
         }
 

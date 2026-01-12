@@ -59,7 +59,7 @@ builder.Services.AddScoped<IOllamaService, OllamaService>();
 // CORS Configuration
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    /*options.AddDefaultPolicy(policy =>
     {
         var allowedOrigins = builder.Configuration.GetSection("CORS:AllowedOrigins").Get<string[]>()
             ?? new[] { "https://localhost:7136" };
@@ -68,6 +68,14 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
+    });*/
+    options.AddPolicy("LocalDevPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:7061")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              // .AllowCredentials() // uncomment only if you actually send credentials
+              ;
     });
 });
 
@@ -93,7 +101,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("LocalDevPolicy");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

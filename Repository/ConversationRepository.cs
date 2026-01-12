@@ -21,7 +21,7 @@ namespace SLA_API_AIChatBot_Poc.Repository
             {
                 _logger.LogInformation("Retrieving conversation {ConversationId}", conversationId);
 
-                var conversation = await _context.ConversationsContext
+                var conversation = await _context.Conversations
                     .AsNoTracking()
                     .FirstOrDefaultAsync(c => c.ConversationId == conversationId);
 
@@ -50,20 +50,20 @@ namespace SLA_API_AIChatBot_Poc.Repository
             {
                 _logger.LogInformation("Saving conversation {ConversationId}", context.ConversationId);
 
-                var existingConversation = await _context.ConversationsContext
+                var existingConversation = await _context.Conversations
                     .FirstOrDefaultAsync(c => c.ConversationId == context.ConversationId);
 
                 if (existingConversation != null)
                 {
                     // Update existing conversation
                     _context.Entry(existingConversation).State = EntityState.Detached;
-                    _context.ConversationsContext.Update(context);
+                    _context.Conversations.Update(context);
                     _logger.LogInformation("Updating existing conversation {ConversationId}", context.ConversationId);
                 }
                 else
                 {
                     // Add new conversation
-                    await _context.ConversationsContext.AddAsync(context);
+                    await _context.Conversations.AddAsync(context);
                     _logger.LogInformation("Adding new conversation {ConversationId}", context.ConversationId);
                 }
 
@@ -107,7 +107,7 @@ namespace SLA_API_AIChatBot_Poc.Repository
 
         public async Task<List<Conversations>> GetUserConversationsAsync(string userId)
         {
-            return await _context.ConversationsContext
+            return await _context.Conversations
                 .AsNoTracking()
                 .Where(c => c.UserId == userId)
                 .OrderByDescending(c => c.StartedAt)
@@ -118,13 +118,13 @@ namespace SLA_API_AIChatBot_Poc.Repository
         {
             try
             {
-                var conversation = await _context.ConversationsContext
+                var conversation = await _context.Conversations
                     .FirstOrDefaultAsync(c => c.ConversationId == conversationId);
 
                 if (conversation == null)
                     return false;
 
-                _context.ConversationsContext.Remove(conversation);
+                _context.Conversations.Remove(conversation);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Deleted conversation {ConversationId}", conversationId);

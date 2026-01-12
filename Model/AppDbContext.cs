@@ -5,7 +5,7 @@ namespace SLA_API_AIChatBot_Poc.Model
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Conversations> ConversationsContext { get; set; }
+        public DbSet<Conversations> Conversations { get; set; }
         public DbSet<FeedbackRequest> Feedbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
