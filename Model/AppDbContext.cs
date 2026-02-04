@@ -6,7 +6,7 @@ namespace SLA_API_AIChatBot_Poc.Model
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Conversations> Conversations { get; set; }
-        public DbSet<FeedbackRequest> Feedbacks { get; set; }
+        public DbSet<ErrorResponse> Feedbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,10 +30,10 @@ namespace SLA_API_AIChatBot_Poc.Model
                 entity.Property(e => e.RequiresEscalation)
                     .IsRequired();
 
-                // Store Messages as JSON
+               /* // Store Messages as JSON
                 entity.Property(e => e.MessagesJson)
                     .HasColumnName("MessagesJson")
-                    .HasColumnType("nvarchar(max)");
+                    .HasColumnType("nvarchar(max)");*/
 
                 // Store Metadata as JSON
                 entity.Property(e => e.MetadataJson)
@@ -41,7 +41,7 @@ namespace SLA_API_AIChatBot_Poc.Model
                     .HasColumnType("nvarchar(max)");
 
                 // Ignore the non-mapped properties
-                entity.Ignore(e => e.Messages);
+                /*entity.Ignore(e => e.Messages);*/
                 entity.Ignore(e => e.Metadata);
 
                 // Indexes

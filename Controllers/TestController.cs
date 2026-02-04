@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SLA_API_AIChatBot_Poc.Interface;
+
 using SLA_API_AIChatBot_Poc.Model;
+using SLA_API_AIChatBot_Poc.Services;
 
 namespace SLA_API_AIChatBot_Poc.Controllers
 {
@@ -10,13 +11,15 @@ namespace SLA_API_AIChatBot_Poc.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
+      
         private readonly AppDbContext _context;
-        private readonly IConversationRepository _repo;
-
+       /* private readonly IConversationRepository _repo;*/
+/*
         public TestController(AppDbContext context, IConversationRepository repo)
         {
             _context = context;
             _repo = repo;
+            
         }
 
         [HttpGet("database")]
@@ -30,8 +33,8 @@ namespace SLA_API_AIChatBot_Poc.Controllers
                 databaseConnected = canConnect,
                 conversationCount = await _context.Conversations.CountAsync()
             });
-        }
-
+        }*/
+/*
         [HttpGet("repository")]
         public async Task<IActionResult> TestRepository()
         {
@@ -56,6 +59,30 @@ namespace SLA_API_AIChatBot_Poc.Controllers
                 retrieved = retrieved != null,
                 messageCount = retrieved?.Messages.Count ?? 0
             });
-        }
+        }*/
+
+/*
+        [HttpGet("health")]
+        public async Task<IActionResult> HealthCheck()
+        {
+            var isAvailable = await _ollamaService.IsServiceAvailableAsync();
+
+            if (isAvailable)
+            {
+                var models = await _ollamaService.ListModelsAsync();
+                return Ok(new 
+                {
+                    status = "healthy",
+                    models = models,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+
+            return StatusCode(503, new
+            {
+                status = "unhealthy",
+                error = "Ollama service is not available"
+            });
+        }*/
     }
 }

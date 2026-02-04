@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SLA_API_AIChatBot_Poc.Interface;
 using SLA_API_AIChatBot_Poc.Model;
 
 namespace SLA_API_AIChatBot_Poc.Repository
 {
-    public class ConversationRepository : IConversationRepository
+    public class ConversationRepository 
     {
         private readonly AppDbContext _context; // DbContext
         private readonly ILogger<ConversationRepository> _logger;
@@ -15,7 +14,7 @@ namespace SLA_API_AIChatBot_Poc.Repository
             _logger = logger;
         }
 
-        public async Task<Conversations?> GetConversationAsync(string conversationId)
+       /* public async Task<Conversations?> GetConversationAsync(string conversationId)
         {
             try
             {
@@ -42,7 +41,7 @@ namespace SLA_API_AIChatBot_Poc.Repository
                 _logger.LogError(ex, "Error retrieving conversation {ConversationId}", conversationId);
                 return null;
             }
-        }
+        }*/
 
         public async Task SaveConversationAsync(Conversations context)
         {
@@ -77,14 +76,14 @@ namespace SLA_API_AIChatBot_Poc.Repository
             }
         }
 
-        public async Task SaveFeedbackAsync(string messageId, bool isHelpful)
+     /*   public async Task SaveFeedbackAsync(string messageId, bool isHelpful)
         {
             try
             {
                 _logger.LogInformation("Saving feedback for message {MessageId}: {IsHelpful}",
                     messageId, isHelpful);
 
-                var feedback = new FeedbackRequest
+                var feedback = new ErrorResponse
                 {
                     MessageId = messageId,
                     IsHelpful = isHelpful,
@@ -101,7 +100,7 @@ namespace SLA_API_AIChatBot_Poc.Repository
                 _logger.LogError(ex, "Error saving feedback for message {MessageId}", messageId);
                 throw;
             }
-        }
+        }*/
 
         // Additional helper methods
 

@@ -17,7 +17,7 @@ namespace SLA_API_AIChatBot_Poc.Model
 
         public bool RequiresEscalation { get; set; }
 
-        // JSON storage properties (mapped to database)
+      /*  // JSON storage properties (mapped to database)
         [Column("MessagesJson")]
         public string MessagesJson
         {
@@ -25,7 +25,7 @@ namespace SLA_API_AIChatBot_Poc.Model
             set => Messages = string.IsNullOrEmpty(value)
                 ? new List<Message>()
                 : JsonSerializer.Deserialize<List<Message>>(value) ?? new List<Message>();
-        }
+        }*/
 
         [Column("MetadataJson")]
         public string MetadataJson
@@ -36,14 +36,14 @@ namespace SLA_API_AIChatBot_Poc.Model
                 : JsonSerializer.Deserialize<Dictionary<string, object>>(value) ?? new Dictionary<string, object>();
         }
 
-        // In-memory properties (not mapped to database)
+       /* // In-memory properties (not mapped to database)
         [NotMapped]
-        public List<Message> Messages { get; set; } = new List<Message>();
+        public List<Message> Messages { get; set; } = new List<Message>();*/
 
         [NotMapped]
         public Dictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
-        public void AddMessage(string role, string content)
+    /*    public void AddMessage(string role, string content)
         {
             Messages.Add(new Message
             {
@@ -52,6 +52,6 @@ namespace SLA_API_AIChatBot_Poc.Model
                 Timestamp = DateTime.UtcNow,
                 MessageId = Guid.NewGuid().ToString()
             });
-        }
+        }*/
 
     } }
